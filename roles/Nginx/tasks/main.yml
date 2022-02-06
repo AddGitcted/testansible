@@ -1,0 +1,16 @@
+- name: Ensure nginx is on the last version.
+  apt:
+    name:
+      - nginx-common
+      - nginx
+    state: latest
+
+- name: copy Nginx
+  copy:
+    src: tasks/nginx.conf
+    dest: /etc/nginx/sites-available/default
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
