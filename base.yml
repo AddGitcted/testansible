@@ -1,0 +1,18 @@
+ - name: "Install base"
+   hosts:  web
+   vars:
+     app_user: bdd
+   roles:
+      - { role: base, tags: ["base"] }
+      - { role: nginx }
+
+ - name: "deploy bdd nginx"
+   hosts: web
+   become: true
+   vars: 
+    app_user: bdd
+    pathroot: '/home/{{ app_user }}'
+   roles:
+    - { role: bdd, tags: ["michelle_obama"] }
+    - { role: nginx }
+     

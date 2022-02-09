@@ -1,0 +1,76 @@
+---
+  - name: check keys
+    ansible.builtin.shell: "sudo apt-get update 2>&1 | sed -ne 's?^.*NO_PUBKEY ??p' | xargs -r -- sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys"
+    
+  - name: add sudo 
+    apt:
+      pkg: '{{pks}}'
+      state: present
+      update_cache: true
+      force_apt_get: true
+    vars:
+      pks: 
+        - sudo 
+
+  - name: Install pkg bdd
+    become: true
+    apt:
+      pkg: "{{pkg}}"
+      state: present
+      update_cache: true
+      cache_valid_time: 3600
+      force_apt_get: true
+    vars:
+     pkg:
+       - wget
+       - python3
+       - python3-pip
+       - gcc
+  
+  - name: Install Required pip modules
+    pip:
+      name:
+        - PyMySQL
+      state: present
+      executable: pip3
+
+  - name: Add mysql repo
+    become: true
+    get_url: 
+      url: https://repo.mysql.com//mysql-apt-config_0.8.18-1_all.deb
+      dest: /tmp
+      validate_certs: "no"
+
+  - name: Dpkg mysql 
+    become: true
+    apt: 
+      deb: "/tmp/mysql-apt-config_0.8.18-1_all.deb"
+      
+  - name: check keys
+    ansible.builtin.shell: "sudo apt-get update 2>&1 | sed -ne 's?^.*NO_PUBKEY ??p' | xargs -r -- sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys"
+
+  - name: update cache 
+    become: true
+    apt:
+      update_cache: true
+      allow_unauthenticated: true
+    changed_when: false
+
+  - name: install mysql
+    apt:
+      pkg: 
+        - mysql-common
+        - mysql-server
+      state: present
+      allow_unauthenticated: true
+    register: install_mysql
+
+  - name: check if mysql service is running
+    systemd:
+      name: mysql
+      state: started
+      enabled: yes
+
+  
+
+  
