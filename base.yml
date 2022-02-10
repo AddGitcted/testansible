@@ -4,9 +4,9 @@
      app_user: bdd
    roles:
       - { role: base, tags: ["base"] }
-      - { role: nginx }
+      - { role: Nginx }
 
- - name: "deploy bdd nginx"
+ - name: "deploy bdd Nginx"
    hosts: web
    become: true
    vars: 
@@ -14,5 +14,5 @@
     pathroot: '/home/{{ app_user }}'
    roles:
     - { role: bdd, tags: ["michelle_obama"] }
-    - { role: nginx }
+    - { role: Nginx }
      
